@@ -15,9 +15,9 @@ sys.path.append("..")
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
 
-def_add_lat_lon(df):
-"""add latitude & longitude to df based on city name
-"""
+def add_lat_lon(df):
+    """add latitude & longitude to df based on city name
+    """
     #fetching actual locator from str city name
     locator = Nominatim(user_agent="myGeocoder")
     df['loc'] = df['City'].apply(lambda x : locator.geocode(x))
@@ -26,6 +26,6 @@ def_add_lat_lon(df):
 
     df['longitude'] = df['loc'].apply(lambda x : x.longitude)
 
-    df.drop('loc', axis=1, inplace=True)
+    #df.drop('loc', axis=1, inplace=True)
 
     return df
