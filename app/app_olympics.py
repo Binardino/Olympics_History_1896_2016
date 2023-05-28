@@ -14,6 +14,7 @@ from geopy.geocoders import Nominatim
 sys.path.append("..")
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
+from functions import *
 
 st.set_page_config(page_title="Olympics Athletes EDA presentation")
 #%%
@@ -52,17 +53,6 @@ df_city = df_city.merge(df_city_olympics, how='left')
 
 df_city = df_city.drop_duplicates().sort_values(by='Year').reset_index(drop=True)
 
-st.write(df_city)
-
-#fetching actual locator from str city name
-locator = Nominatim(user_agent="myGeocoder")
-df_city['loc'] = df_city['City'].apply(lambda x : locator.geocode(x))
-#fetching only lat & long attributes
-df_city['latitude'] = df_city['loc'].apply(lambda x : x.latitude)
-
-df_city['longitude'] = df_city['loc'].apply(lambda x : x.longitude)
-
-df_city.drop('loc', axis=1, inplace=True)
 st.write(df_city)
 
 st.map(df_city)
