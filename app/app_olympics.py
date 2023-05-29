@@ -99,3 +99,13 @@ st.write(df_age)
 fig = px.histogram(df_age, x='Age')
 
 st.plotly_chart(fig)
+
+#%%
+#split per gender
+st.markdown("""Split per gender""")
+df_male   = df_athlete.loc[df_athlete['Sex'] == 'M']
+df_female = df_athlete.loc[df_athlete['Sex'] == 'F']
+
+fig_gender = px.pie(df_athlete, values=df_athlete.Sex.value_counts())
+
+st.plotly_chart(fig_gender)
