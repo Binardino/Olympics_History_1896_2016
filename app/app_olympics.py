@@ -87,3 +87,15 @@ sns.barplot(data=df_medals.nlargest(25,'medal_count'),
            hue='Medal')
 
 st.pyplot(fig_medal)
+#%%
+#EDA over athletes
+st.markdown("""EDA over athletes""")
+
+st.markdown("""Age distribution""")
+df_age = df_athlete[['Age','Height','Weight']].fillna(0).copy()
+df_age['Age'] = df_age['Age'].astype(int)
+st.write(df_age)
+
+fig = px.histogram(df_age, x='Age')
+
+st.plotly_chart(fig)
