@@ -109,3 +109,14 @@ df_female = df_athlete.loc[df_athlete['Sex'] == 'F']
 fig_gender = px.pie(df_athlete, values=df_athlete.Sex.value_counts())
 
 st.plotly_chart(fig_gender)
+#%%
+#split per sport
+st.markdown("""Distribution of sports""")
+df_sport = df_athlete.groupby(['Year', 'Season', 'Sport']).agg({'Sport':'count'}) \
+                .rename(columns={'Sport':'Count'}) \
+                .reset_index()
+
+st.write(df_sport)
+fig_sport = px.bar(df_sport, x=df_sport['Year'], y=df_sport['Count'], color='Sport')
+
+st.plotly_chart(fig_sport)
