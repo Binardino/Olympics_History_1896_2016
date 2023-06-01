@@ -92,14 +92,28 @@ sns.barplot(data=df_medals.nlargest(25,'medal_count'),
 st.pyplot(fig_medal)
 
 
-fig_px_medal = px.bar(df_medals.nlargest(25,'medal_count'), 
+fig_px_medal = px.bar(df_medals.nlargest(50,'medal_count'), 
                     x='Team', y='medal_count', 
                     color='Medal', color_discrete_sequence=("#FFD700", #gold
                                                             "#C0C0C0", #silver
                                                             "#CD7F32" #bronze
-                                                            ))
+                                                            )
+                    )
 
 st.plotly_chart(fig_px_medal)
+
+#split per sport
+df_medalsport = df_athlete.groupby(['Sport', 'Medal']).agg({'Medal':'count'}).rename(columns={'Medal':'medal_count'}).reset_index()
+
+fig_px_medalsport = px.bar(df_medalsport.nlargest(50,'medal_count'), 
+                    x='Sport', y='medal_count', 
+                    color='Medal', color_discrete_sequence=("#FFD700", #gold
+                                                            "#C0C0C0", #silver
+                                                            "#CD7F32" #bronze
+                                                            )
+                    )
+st.plotly_chart(fig_px_medalsport)
+
 #%%
 #EDA over athletes
 st.markdown("""EDA over athletes""")
