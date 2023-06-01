@@ -70,6 +70,9 @@ df_summer = df_city.loc[(df_city['Season'] == 'Summer')]
 
 df_winter = df_city.loc[(df_city['Season'] == 'Winter')]
 
+#%%
+# #split per medals
+
 #medals per country
 df_medals = df_athlete.groupby(['Team', 'Medal']).agg({'Medal':'count'})
 
@@ -87,6 +90,16 @@ sns.barplot(data=df_medals.nlargest(25,'medal_count'),
            hue='Medal')
 
 st.pyplot(fig_medal)
+
+
+fig_px_medal = px.bar(df_medals.nlargest(25,'medal_count'), 
+                    x='Team', y='medal_count', 
+                    color='Medal', color_discrete_sequence=("#FFD700", #gold
+                                                            "#C0C0C0", #silver
+                                                            "#CD7F32" #bronze
+                                                            ))
+
+st.plotly_chart(fig_px_medal)
 #%%
 #EDA over athletes
 st.markdown("""EDA over athletes""")
@@ -120,3 +133,5 @@ st.write(df_sport)
 fig_sport = px.bar(df_sport, x=df_sport['Year'], y=df_sport['Count'], color='Sport')
 
 st.plotly_chart(fig_sport)
+
+#%%
