@@ -119,13 +119,24 @@ st.plotly_chart(fig_px_medalsport)
 st.markdown("""EDA over athletes""")
 
 st.markdown("""Age distribution""")
-df_age = df_athlete[['Age','Height','Weight']].fillna(0).copy()
-df_age['Age'] = df_age['Age'].astype(int)
+df_age = df_athlete[['Age','Height','Weight', 'Sex', 'Year']].dropna().copy()
+df_age[['Age','Height','Weight']] = df_age[['Age','Height','Weight']].astype(int)
 st.write(df_age)
 
-fig = px.histogram(df_age, x='Age')
+fig_age = px.histogram(df_age, x='Age', color='Sex',barmode='group')
 
-st.plotly_chart(fig)
+st.plotly_chart(fig_age)
+
+st.markdown("""Weight distribution""")
+st.write(df_age)
+
+fig_weight = px.histogram(df_age, x='Weight', color='Sex',barmode='overlay')
+
+st.plotly_chart(fig_weight)
+
+fig_sex = px.histogram( df_age, x='Year', color='Sex',barmode='stack')
+
+st.plotly_chart(fig_sex)
 
 #%%
 #split per gender
