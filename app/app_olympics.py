@@ -148,4 +148,10 @@ fig_sport = px.bar(df_sport, x=df_sport['Year'], y=df_sport['Count'], color='Spo
 
 st.plotly_chart(fig_sport)
 
+st.markdown("""Presence of Sports per year
+
+When did each sport start being represented at the Olympics ?""")
+fig_sportyear = px.scatter(df_sport, x=df_sport['Year'], y=df_sport['Sport'], color='Sport')
+
+st.plotly_chart(fig_sportyear)
 #%%
