@@ -159,10 +159,36 @@ fig_sport = px.bar(df_sport, x=df_sport['Year'], y=df_sport['Count'], color='Spo
 
 st.plotly_chart(fig_sport)
 
-st.markdown("""Presence of Sports per year
+st.markdown("""Presence of Sports per year""")
 
-When did each sport start being represented at the Olympics ?""")
+st.caption("""Scatter plot per year to map when did each sport start being represented at the Olympics ?""")
 fig_sportyear = px.scatter(df_sport, x=df_sport['Year'], y=df_sport['Sport'], color='Sport')
 
 st.plotly_chart(fig_sportyear)
 #%%
+#correlation matrix
+st.markdown("""Correlation matrix""")
+df_corr = df_athlete[['Weight','Height','Age']].corr()
+
+df_corr = df_athlete[['Name','Sport', 'Medal','Weight','Height','Age', 'Year']].copy()
+
+# df_corr = df_corr.dropna(axis=0).copy()
+
+df_corr = df_corr.fillna(np.nan).copy()
+
+st.write(df_corr)
+st.markdown("""Correlation matrix""")
+df_corr2 = df_corr.groupby(['Name','Sport']).agg({'Medal':'count', 
+                                                            'Weight':'mean',
+                                                            'Height':'mean',
+                                                            'Age':'mean'}
+                                                            )
+
+
+st.write(df_corr)
+
+fig_corr = plt.figure(figsize=(15,7))
+
+sns.heatmap(df_corr)
+
+st.pyplot(fig_corr)
