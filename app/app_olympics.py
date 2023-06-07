@@ -27,29 +27,25 @@ def get_data_csv(path):
 def get_data_sql(query, engine):
     return pd.read_sql(query=query, con=engine)
 
-#%%
-#reading dfs
+#%%#reading dfs
 df_athlete = get_data_csv('../data/athlete_events.csv')
 
 df_city_olympics = get_data_csv('../data/olympic_city_country.csv')
 
 df_city = get_data_csv('../data/df_city.csv')
 
-st.write(df_city_olympics)
+#%%
+st.markdown(""" Welcome to the ultimate Olympics EDA & Data Visualisation presentation
+All of Modern Olympics data from 1896 to 2016 - 2020 Tokyo data pending """)
+# st.write(df_city_olympics)
 
-st.write(df_athlete)
-
+# st.write(df_athlete)
 #%%
 #fig = sns.pairplot(df_athlete, hue="Medal")
 
 #st.pyplot(fig)
 #%%
 #sub df city for mapping
-
-# df_city = df_athlete[['City', 'Year', 'Season']].copy()
-
-st.write(df_city)
-
 #adding countries to df_city
 df_city = df_city.merge(df_city_olympics, how='left')
 
@@ -208,7 +204,7 @@ plt.show()
 medal_counts = df_athlete.groupby(['Team', 'Year'])['Medal'].count().reset_index()
 
 # Select the top performing countries
-top_countries = medal_counts.groupby('Team')['Medal'].sum().nlargest(20).index
+top_countries = medal_counts.groupby('Team')['Medal'].sum().nlargest(30).index
 
 # Filter the data for the top performing countries
 top_countries_data = medal_counts[medal_counts['Team'].isin(top_countries)].sort_values(by='Year')
@@ -226,9 +222,12 @@ fig_evol = px.bar(top_countries_data,
 
 # Customize the layout
 fig_evol.update_layout(xaxis={'categoryorder': 'total descending'})
+fig_evol.update_xaxes(tickfont=dict(size=20))
 fig_evol.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1000
+
+st.plotly_chart(fig_evol)
 
 fig_evol.show()
 
 # Show the plot
-# st.plotly_chart(fig_evol)
+# 
