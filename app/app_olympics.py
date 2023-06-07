@@ -55,7 +55,7 @@ st.write(df_city)
 
 st.map(df_city)
 
-fig_map = px.scatter_mapbox(df_city, lat="latitude", lon="longitude", zoom=3)
+fig_map = px.scatter_mapbox(df_city, lat="latitude", lon="longitude", zoom=1)
 
 fig_map.update_layout(mapbox_style="open-street-map")
 fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
@@ -65,11 +65,9 @@ st.plotly_chart(fig_map)
 df_summer = df_city.loc[(df_city['Season'] == 'Summer')]
 
 df_winter = df_city.loc[(df_city['Season'] == 'Winter')]
-
 #%%
-# #split per medals
-
-#medals per country
+# #split per country / per medals
+st.markdown("""Analysis of country performance per year""")
 df_medals = df_athlete.groupby(['Team', 'Medal']).agg({'Medal':'count'})
 
 df_medals.columns=['medal_count']
@@ -97,19 +95,35 @@ fig_px_medal = px.bar(df_medals.nlargest(50,'medal_count'),
                     )
 
 st.plotly_chart(fig_px_medal)
+#%% Evolution of countries performance over time
+# Group by country and year, and calculate the medal count - All Medal types
+medal_counts = df_athlete.groupby(['Team', 'Year'])['Medal'].count().reset_index()
 
-#split per sport
-df_medalsport = df_athlete.groupby(['Sport', 'Medal']).agg({'Medal':'count'}).rename(columns={'Medal':'medal_count'}).reset_index()
+# Select the top performing countries
+top_countries = medal_counts.groupby('Team')['Medal'].sum().nlargest(30).index
 
-fig_px_medalsport = px.bar(df_medalsport.nlargest(50,'medal_count'), 
-                    x='Sport', y='medal_count', 
-                    color='Medal', color_discrete_sequence=("#FFD700", #gold
-                                                            "#C0C0C0", #silver
-                                                            "#CD7F32" #bronze
-                                                            )
-                    )
-st.plotly_chart(fig_px_medalsport)
+# Filter the data for the top performing countries
+top_countries_data = medal_counts[medal_counts['Team'].isin(top_countries)].sort_values(by='Year')
 
+# Create the animated bar chart
+fig_evol = px.bar(top_countries_data, 
+                    x='Team', y='Medal', 
+                    animation_frame='Year', 
+                    color='Team',
+                    labels={'Team': 'Country', 
+                            'Medal': 'Medal Count'}, 
+                    # range_x=[0, top_countries_data.Team.nunique()],
+                    range_y=[0, top_countries_data['Medal'].max()],
+                    title='Top Performing Countries\' Medal Counts Over Time')
+
+# Customize the layout
+fig_evol.update_layout(xaxis={'categoryorder': 'total descending'})
+fig_evol.update_xaxes(tickfont=dict(size=20))
+fig_evol.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1000
+
+st.plotly_chart(fig_evol)
+
+# fig_evol.show()
 #%%
 #EDA over athletes
 st.markdown("""EDA over athletes""")
@@ -162,6 +176,21 @@ fig_sportyear = px.scatter(df_sport, x=df_sport['Year'], y=df_sport['Sport'], co
 
 st.plotly_chart(fig_sportyear)
 #%%
+#split per sport
+df_medalsport = df_athlete.groupby(['Sport', 'Medal']).agg({'Medal':'count'}).rename(columns={'Medal':'medal_count'}).reset_index()
+
+fig_px_medalsport = px.bar(df_medalsport.nlargest(50,'medal_count'), 
+                    x='Sport', y='medal_count', 
+                    color='Medal', color_discrete_sequence=("#FFD700", #gold
+                                                            "#C0C0C0", #silver
+                                                            "#CD7F32" #bronze
+                                                            )
+                    )
+st.plotly_chart(fig_px_medalsport)
+
+
+
+#%%
 #correlation matrix
 st.markdown("""Correlation matrix""")
 df_corr = df_athlete[['Weight','Height','Age']].corr()
@@ -199,35 +228,7 @@ sns.heatmap(correlations, annot=True, cmap='coolwarm')
 plt.title('Correlation Matrix')
 plt.show()
 
-#%% Evolution of countries performance over time
-# Group by country and year, and calculate the medal count - All Medal types
-medal_counts = df_athlete.groupby(['Team', 'Year'])['Medal'].count().reset_index()
 
-# Select the top performing countries
-top_countries = medal_counts.groupby('Team')['Medal'].sum().nlargest(30).index
-
-# Filter the data for the top performing countries
-top_countries_data = medal_counts[medal_counts['Team'].isin(top_countries)].sort_values(by='Year')
-
-# Create the animated bar chart
-fig_evol = px.bar(top_countries_data, 
-                    x='Team', y='Medal', 
-                    animation_frame='Year', 
-                    color='Team',
-                    labels={'Team': 'Country', 
-                            'Medal': 'Medal Count'}, 
-                    # range_x=[0, top_countries_data.Team.nunique()],
-                    range_y=[0, top_countries_data['Medal'].max()],
-                    title='Top Performing Countries\' Medal Counts Over Time')
-
-# Customize the layout
-fig_evol.update_layout(xaxis={'categoryorder': 'total descending'})
-fig_evol.update_xaxes(tickfont=dict(size=20))
-fig_evol.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1000
-
-st.plotly_chart(fig_evol)
-
-fig_evol.show()
 
 # Show the plot
 # 
