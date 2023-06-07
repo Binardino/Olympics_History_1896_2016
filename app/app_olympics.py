@@ -170,7 +170,7 @@ st.plotly_chart(fig_sportyear)
 st.markdown("""Correlation matrix""")
 df_corr = df_athlete[['Weight','Height','Age']].corr()
 
-df_corr = df_athlete[['Name','Sport', 'Medal','Weight','Height','Age', 'Year']].copy()
+df_corr = df_athlete[['Medal','Weight','Height','Age']].copy()
 
 # df_corr = df_corr.dropna(axis=0).copy()
 
@@ -178,17 +178,49 @@ df_corr = df_corr.fillna(np.nan).copy()
 
 st.write(df_corr)
 st.markdown("""Correlation matrix""")
-df_corr2 = df_corr.groupby(['Name','Sport']).agg({'Medal':'count', 
-                                                            'Weight':'mean',
+df_corr2 = df_corr.groupby(['Medal']).agg({'Weight':'mean',
                                                             'Height':'mean',
                                                             'Age':'mean'}
                                                             )
 
 
-st.write(df_corr)
+# st.write(df_corr)
 
 fig_corr = plt.figure(figsize=(15,7))
 
-sns.heatmap(df_corr)
+sns.heatmap(df_corr2)
 
 st.pyplot(fig_corr)
+
+# Filter out rows without medal achievements
+df_corr = df_corr[df_corr['Medal'].notnull()]
+
+# Compute correlation coefficients
+correlations = df_corr.corr(method='pearson')
+
+# Visualize the correlation matrix using a heatmap
+sns.heatmap(correlations, annot=True, cmap='coolwarm')
+plt.title('Correlation Matrix')
+plt.show()
+
+#%% Evolution of countries performance over time
+# Group by country and year, and calculate the medal count
+medal_counts = df_athlete.groupby(['NOC', 'Year'])['Medal'].count().reset_index()
+
+# Select the top performing countries
+top_countries = medal_counts.groupby('NOC')['Medal'].sum().nlargest(10).index
+
+# Filter the data for the top performing countries
+top_countries_data = medal_counts[medal_counts['NOC'].isin(top_countries)]
+
+# Create the animated bar chart
+fig_evol = px.bar(top_countries_data, x='NOC', y='Medal', animation_frame='Year', color='NOC',
+             labels={'NOC': 'Country', 'Medal': 'Medal Count'}, 
+             title='Top Performing Countries\' Medal Counts Over Time')
+
+# Customize the layout
+fig_evol.update_layout(xaxis={'categoryorder': 'total descending'})
+fig_evol.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1000
+
+# Show the plot
+st.plotly_chart(fig_evol)
