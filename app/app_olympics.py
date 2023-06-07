@@ -204,23 +204,31 @@ plt.title('Correlation Matrix')
 plt.show()
 
 #%% Evolution of countries performance over time
-# Group by country and year, and calculate the medal count
-medal_counts = df_athlete.groupby(['NOC', 'Year'])['Medal'].count().reset_index()
+# Group by country and year, and calculate the medal count - All Medal types
+medal_counts = df_athlete.groupby(['Team', 'Year'])['Medal'].count().reset_index()
 
 # Select the top performing countries
-top_countries = medal_counts.groupby('NOC')['Medal'].sum().nlargest(10).index
+top_countries = medal_counts.groupby('Team')['Medal'].sum().nlargest(20).index
 
 # Filter the data for the top performing countries
-top_countries_data = medal_counts[medal_counts['NOC'].isin(top_countries)]
+top_countries_data = medal_counts[medal_counts['Team'].isin(top_countries)].sort_values(by='Year')
 
 # Create the animated bar chart
-fig_evol = px.bar(top_countries_data, x='NOC', y='Medal', animation_frame='Year', color='NOC',
-             labels={'NOC': 'Country', 'Medal': 'Medal Count'}, 
-             title='Top Performing Countries\' Medal Counts Over Time')
+fig_evol = px.bar(top_countries_data, 
+                    x='Team', y='Medal', 
+                    animation_frame='Year', 
+                    color='Team',
+                    labels={'Team': 'Country', 
+                            'Medal': 'Medal Count'}, 
+                    # range_x=[0, top_countries_data.Team.nunique()],
+                    range_y=[0, top_countries_data['Medal'].max()],
+                    title='Top Performing Countries\' Medal Counts Over Time')
 
 # Customize the layout
 fig_evol.update_layout(xaxis={'categoryorder': 'total descending'})
 fig_evol.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1000
 
+fig_evol.show()
+
 # Show the plot
-st.plotly_chart(fig_evol)
+# st.plotly_chart(fig_evol)
