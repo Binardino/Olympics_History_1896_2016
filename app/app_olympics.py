@@ -53,12 +53,24 @@ df_city = df_city.drop_duplicates().sort_values(by='Year').reset_index(drop=True
 
 st.write(df_city)
 
-st.map(df_city)
+st.markdown("""Worldmap of Cities having held the Olympics""")
+st.write("""Colors depends on Season - Size on amount of Olympics""")
+# Group by city and count the number of occurrences
+city_counts = df_city.groupby(['City']).size().reset_index(name='Count')
 
-fig_map = px.scatter_mapbox(df_city, lat="latitude", lon="longitude", zoom=1)
+# Merge the counts with the map data
+map_data = df_city.merge(city_counts, on='City')
 
-fig_map.update_layout(mapbox_style="open-street-map")
-fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+# Create the map
+fig_map = px.scatter_mapbox(map_data, lat='latitude', lon='longitude', hover_name='City',
+                        size='Count', color='Season', zoom=1, height=500,
+                        title='Cities Hosting the Olympics',
+                        mapbox_style='carto-positron')
+
+# Customize the marker size and color scale
+fig_map.update_traces(marker=dict(sizemode='area', sizeref=0.05), selector=dict(mode='markers'))
+
+# Show the map
 st.plotly_chart(fig_map)
 #%%
 # #creating 2 dfs for Summer & Winter Olympics
