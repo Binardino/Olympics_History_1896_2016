@@ -160,14 +160,33 @@ st.plotly_chart(fig_gender)
 #%%
 #split per sport
 st.markdown("""Distribution of sports""")
+
+st.markdown(""" Age & Weight Distribution""")
 df_sport = df_athlete.groupby(['Year', 'Season', 'Sport']).agg({'Sport':'count'}) \
                 .rename(columns={'Sport':'Count'}) \
                 .reset_index()
 
 st.write(df_sport)
-fig_sport = px.bar(df_sport, x=df_sport['Year'], y=df_sport['Count'], color='Sport')
+fig_sport = px.bar(df_sport, x=df_sport['Year'], y=df_sport['Count'], 
+                    color='Sport',
+                    )
 
 st.plotly_chart(fig_sport)
+
+st.write("""Age & Gender distribution per sports""")
+selection_sport_athlete = st.selectbox('select viz library', ['plotly', 'seaborn'])
+if selection_sport_athlete == 'plotly':
+    fig_sport_athlete = px.box(df_athlete.dropna(subset=['Age']), x='Sport', y='Age', color='Sex')
+    st.plotly_chart(fig_sport_athlete)
+elif selection_sport_athlete == 'seaborn':
+    fig_sport_athlete = plt.figure(figsize=(12,6))
+    sns.boxplot(data=df_athlete.dropna(subset=['Age']), x='Sport', y='Age', hue='Sex')
+    plt.xticks(rotation=90)
+    plt.title('Age and Gender Representation in Sports')
+    plt.xlabel('Sport')
+    plt.ylabel('Age')
+    plt.legend(title='Gender')
+    st.pyplot(fig_sport_athlete)
 
 st.markdown("""Presence of Sports per year""")
 
