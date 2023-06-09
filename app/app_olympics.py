@@ -42,11 +42,14 @@ df_city = df_city.drop_duplicates().sort_values(by='Year').reset_index(drop=True
 st.write(df_city)
 #%%
 #create sliders
-sidebar_years = create_slider_numeric('Olympics years',df_city.Year,4)
-
-sidebar_countries = create_slider_multiselect('Countries',df_athlete.Team.unique())
-
-sidebar_sports = create_slider_multiselect('Sports',df_athlete.Sport.unique())
+with st.sidebar:
+    st.sidebar.header("Select your filters")
+    st.subheader("Select Olympics Years")
+    sidebar_years = create_slider_numeric('Olympics years',df_city.Year,4)
+    st.subheader("Select competitors")
+    sidebar_countries = create_slider_multiselect('Countries',df_athlete.Team.unique())
+    st.subheader("Select Sports to measure")
+    sidebar_sports = create_slider_multiselect('Sports',df_athlete.Sport.unique())
 #%%
 st.markdown(""" Welcome to the ultimate Olympics EDA & Data Visualisation presentation
 All of Modern Olympics data from 1896 to 2016 - 2020 Tokyo data pending """)
