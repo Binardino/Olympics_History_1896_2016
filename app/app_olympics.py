@@ -33,14 +33,6 @@ df_athlete = get_data_csv('../data/athlete_events.csv')
 df_city_olympics = get_data_csv('../data/olympic_city_country.csv')
 
 df_city = get_data_csv('../data/df_city.csv')
-
-#%%
-st.markdown(""" Welcome to the ultimate Olympics EDA & Data Visualisation presentation
-All of Modern Olympics data from 1896 to 2016 - 2020 Tokyo data pending """)
-# st.write(df_city_olympics)
-
-# st.write(df_athlete)
-#%%
 #sub df city for mapping
 #adding countries to df_city
 df_city = df_city.merge(df_city_olympics, how='left')
@@ -48,6 +40,18 @@ df_city = df_city.merge(df_city_olympics, how='left')
 df_city = df_city.drop_duplicates().sort_values(by='Year').reset_index(drop=True)
 
 st.write(df_city)
+#%%
+#create sliders
+sidebar_years = create_slider_numeric('Olympics years',df_city.Year,4)
+
+sidebar_countries = create_slider_multiselect('Countries',df_athlete.Team.unique())
+
+sidebar_sports = create_slider_multiselect('Sports',df_athlete.Sport.unique())
+#%%
+st.markdown(""" Welcome to the ultimate Olympics EDA & Data Visualisation presentation
+All of Modern Olympics data from 1896 to 2016 - 2020 Tokyo data pending """)
+#%%
+
 
 st.markdown("""Worldmap of Cities having held the Olympics""")
 st.write("""Colors depends on Season - Size on amount of Olympics""")
