@@ -29,3 +29,17 @@ def add_lat_lon(df):
     #df.drop('loc', axis=1, inplace=True)
 
     return df
+
+def create_slider_numeric(label, column, step):
+    slider_numeric = st.sidebar(label,
+                                int(column.min()),
+                                int(column.max()),
+                                step)
+    return slider_numeric
+
+def create_slider_multiselect(label, column):
+    slider_multiselect = st.sidebar.multiselect(label,
+                                                column,
+                                                column
+                                                )
+    return slider_multiselect
