@@ -41,10 +41,6 @@ All of Modern Olympics data from 1896 to 2016 - 2020 Tokyo data pending """)
 
 # st.write(df_athlete)
 #%%
-#fig = sns.pairplot(df_athlete, hue="Medal")
-
-#st.pyplot(fig)
-#%%
 #sub df city for mapping
 #adding countries to df_city
 df_city = df_city.merge(df_city_olympics, how='left')
@@ -55,17 +51,25 @@ st.write(df_city)
 
 st.markdown("""Worldmap of Cities having held the Olympics""")
 st.write("""Colors depends on Season - Size on amount of Olympics""")
+
+#data wrangling
 # Group by city and count the number of occurrences
-city_counts = df_city.groupby(['City']).size().reset_index(name='Count')
+map_data = df_city.groupby(['City']).agg({'Year'      : lambda x : x.tolist(),
+                                          'Season'    : lambda x : x.unique(),
+                                          'latitude'  : 'first',
+                                          'longitude' : 'first',
+                                          'Country'   :'count'}
+                                         ).reset_index().rename(columns={'Country':'count'})
 
-# Merge the counts with the map data
-map_data = df_city.merge(city_counts, on='City')
+map_data['Year'] = map_data['Year'].apply(lambda x : str(x))
 
-# Create the map
-fig_map = px.scatter_mapbox(map_data, lat='latitude', lon='longitude', hover_name='City',
-                        size='Count', color='Season', zoom=1, height=500,
-                        title='Cities Hosting the Olympics',
-                        mapbox_style='carto-positron')
+# map with px scatter mapbox
+fig_map = px.scatter_mapbox(map_data, lat='latitude', lon='longitude', 
+                            hover_data=['City','Year'],
+                            size='count', color='Season', 
+                            zoom=1, height=500,
+                            title='Cities Hosting the Olympics',
+                            mapbox_style='carto-positron')
 
 # Customize the marker size and color scale
 fig_map.update_traces(marker=dict(sizemode='area', sizeref=0.05), selector=dict(mode='markers'))
