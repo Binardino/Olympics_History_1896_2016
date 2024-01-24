@@ -39,13 +39,15 @@ df_city = df_city.merge(df_city_olympics, how='left')
 
 df_city = df_city.drop_duplicates().sort_values(by='Year').reset_index(drop=True)
 
+df_city['Year'] = df_city['Year'].astype(int)
+
 st.write(df_city)
 #%%
 #create sliders
 with st.sidebar:
     st.sidebar.header("Select your filters")
     st.subheader("Select Olympics Years")
-    sidebar_years = create_slider_numeric('Olympics years',df_city.Year,4)
+    sidebar_years = create_slider_numeric(label='Olympics years',column=df_city.Year,step=4)
     st.subheader("Select competitors")
     sidebar_countries = create_slider_multiselect('Countries',df_athlete.Team.unique())
     st.subheader("Select Sports to measure")
@@ -65,15 +67,18 @@ map_data = df_city.groupby(['City']).agg({'Year'      : lambda x : x.tolist(),
                                           'Season'    : lambda x : x.unique(),
                                           'latitude'  : 'first',
                                           'longitude' : 'first',
-                                          'Country'   :'count'}
+                                          'Country'   : 'count'}
                                          ).reset_index().rename(columns={'Country':'count'})
 
-map_data['Year'] = map_data['Year'].apply(lambda x : str(x))
-
+#map_data['Year'] = map_data['Year'].apply(lambda x : str(x))
+# Assuming df is your DataFrame containing the provided data
+map_data['Year'] = map_data['Year'].apply(lambda x: ', '.join(map(str, x)))
+st.write(map_data)
 # map with px scatter mapbox
 fig_map = px.scatter_mapbox(map_data, lat='latitude', lon='longitude', 
                             hover_data=['City','Year'],
-                            size='count', color='Season', 
+                            size='count', 
+                            #color='Season', 
                             zoom=1, height=500,
                             title='Cities Hosting the Olympics',
                             mapbox_style='carto-positron')
