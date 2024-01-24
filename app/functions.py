@@ -31,7 +31,7 @@ def add_lat_lon(df):
     return df
 
 def create_slider_numeric(label, column, step):
-    slider_numeric = st.sidebar(label,
+    slider_numeric = st.sidebar.slider(label,
                                 int(column.min()),
                                 int(column.max()),
                                 step)
